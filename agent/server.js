@@ -135,3 +135,34 @@ app.listen(PORT, () => {
   console.log(`   Marketing:   POST http://localhost:${PORT}/marketing`);
   console.log(`   Prospecting: POST http://localhost:${PORT}/prospecting`);
 });
+
+// ========== ENDPOINT GOS (Agentes Estratégia + Demo) ==========
+const { execSync } = require('child_process');
+const fs = require('fs');
+
+app.post('/gos', (req, res) => {
+  const { userId = 'user', message, agent } = req.body;
+  if (!message) return res.status(400).json({ error: 'message required' });
+
+  const tmpFile = `/tmp/gos_${Date.now()}_${Math.random().toString(36).slice(2)}.txt`;
+  const cleanEnv = {
+    HOME: '/home/openclaw',
+    PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+    TERM: 'xterm',
+    LANG: 'en_US.UTF-8'
+  };
+
+  try {
+    fs.writeFileSync(tmpFile, message);
+    const reply = execSync(
+      `runuser -u openclaw -- bash -c "claude -p < ${tmpFile}"`,
+      { timeout: 120000, encoding: 'utf8', env: cleanEnv }
+    ).trim();
+    res.json({ reply });
+  } catch (err) {
+    console.error('Erro /gos:', err.message);
+    res.status(500).json({ error: 'Erro ao processar', reply: 'Erro no servidor. Tenta novamente.' });
+  } finally {
+    try { fs.unlinkSync(tmpFile); } catch(e) {}
+  }
+});
