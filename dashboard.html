@@ -3,1003 +3,672 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>K2.FIRST — Centro de Agentes IA</title>
+<title>K2 FIRST — AI Automation Dashboard</title>
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --surface2: #1a1a26;
-    --border: #2a2a3a;
-    --accent: #e8b84b;
-    --accent2: #c49a30;
-    --text: #e8e8f0;
-    --muted: #6b6b8a;
-    --green: #22c55e;
-    --red: #ef4444;
-    --blue: #3b82f6;
-    --purple: #a855f7;
-    --pro: #f59e0b;
-    --demo: #ec4899;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+:root {
+  --bg:       #080c14;
+  --nav:      #0b0f1a;
+  --surface:  #0f1420;
+  --surface2: #141926;
+  --card:     #111622;
+  --border:   #1e2537;
+  --border2:  #252d42;
+  --blue:     #2563EB;
+  --blue2:    #1d52c7;
+  --blue-dim: rgba(37,99,235,0.12);
+  --blue-glow:rgba(37,99,235,0.25);
+  --text:     #f0f2f8;
+  --muted:    #4b5578;
+  --muted2:   #6b7499;
+  --green:    #22c55e;
+  --red:      #ef4444;
+  --amber:    #f59e0b;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 
-  /* HEADER */
-  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 56px; flex-shrink: 0; }
-  .logo { display: flex; align-items: center; gap: 10px; }
-  .logo-mark { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; color: #000; }
-  .logo-text { font-weight: 700; font-size: 16px; letter-spacing: 0.5px; }
-  .logo-text span { color: var(--accent); }
-  .header-right { display: flex; align-items: center; gap: 16px; }
-  .status-pill { display: flex; align-items: center; gap: 6px; padding: 4px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; font-size: 12px; color: var(--muted); }
-  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  .model-badge { padding: 4px 10px; background: rgba(232,184,75,0.1); border: 1px solid rgba(232,184,75,0.3); border-radius: 20px; font-size: 11px; color: var(--accent); font-weight: 600; }
+/* ── HEADER ── */
+.header{
+  background:var(--nav);
+  border-bottom:1px solid var(--border);
+  height:64px;padding:0 20px;
+  display:flex;align-items:center;gap:0;
+  flex-shrink:0;
+}
+.logo-wrap{
+  width:160px;display:flex;align-items:center;gap:10px;
+  border-right:1px solid var(--border);
+  padding-right:20px;height:100%;
+}
+.logo-img{height:44px;width:auto;object-fit:contain;}
+.logo-fallback{
+  background:linear-gradient(135deg,#8b97ab,#c4cfdf 45%,#2563EB);
+  border-radius:8px;padding:6px 10px;
+  font-weight:900;font-size:16px;color:#000;letter-spacing:-0.5px;
+  box-shadow:0 0 14px var(--blue-glow);
+}
+.nav-tabs{display:flex;align-items:center;gap:4px;padding:0 20px;flex:1;}
+.nav-tab{
+  display:flex;align-items:center;gap:7px;
+  padding:8px 18px;border-radius:8px;
+  font-size:13px;font-weight:600;color:var(--muted2);
+  cursor:pointer;transition:all .2s;border:none;background:none;
+}
+.nav-tab:hover{color:var(--text);background:var(--blue-dim);}
+.nav-tab.active{background:var(--blue);color:#fff;box-shadow:0 0 16px var(--blue-glow);}
+.nav-tab svg{width:14px;height:14px;fill:currentColor;}
+.header-right{display:flex;align-items:center;gap:14px;margin-left:auto;}
+.sys-status{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted2);}
+.sys-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{box-shadow:0 0 0 5px rgba(34,197,94,0)}}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#4b5578,#6b7499);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;}
 
-  /* TABS */
-  .tabs { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; gap: 0; padding: 0 24px; flex-shrink: 0; }
-  .tab { padding: 14px 20px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
-  .tab:hover { color: var(--text); }
-  .tab.active-daily { color: var(--accent); border-bottom-color: var(--accent); }
-  .tab.active-pro { color: var(--pro); border-bottom-color: var(--pro); }
-  .tab.active-demo { color: var(--demo); border-bottom-color: var(--demo); }
-  .tab-badge { padding: 2px 7px; border-radius: 10px; font-size: 10px; font-weight: 700; }
-  .badge-daily { background: rgba(232,184,75,0.15); color: var(--accent); }
-  .badge-pro { background: rgba(245,158,11,0.15); color: var(--pro); }
-  .badge-demo { background: rgba(236,72,153,0.15); color: var(--demo); }
+/* ── LAYOUT ── */
+.content{flex:1;display:flex;overflow:hidden;}
 
-  /* CONTENT */
-  .content { flex: 1; display: flex; overflow: hidden; }
+/* ── SIDEBAR ── */
+.sidebar{
+  width:200px;background:var(--nav);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;
+}
+.sidebar-header{padding:16px 16px 8px;display:flex;align-items:center;justify-content:space-between;}
+.sidebar-label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
+.agent-count{font-size:11px;color:var(--muted);background:var(--surface2);padding:2px 8px;border-radius:10px;}
+.agent-item{
+  padding:11px 14px;margin:2px 8px;border-radius:10px;
+  cursor:pointer;display:flex;align-items:center;gap:10px;
+  transition:all .2s;border:1px solid transparent;
+  position:relative;
+}
+.agent-item:hover{background:var(--blue-dim);border-color:rgba(37,99,235,.15);}
+.agent-item.active{background:var(--blue-dim);border-color:rgba(37,99,235,.3);box-shadow:0 0 12px rgba(37,99,235,.1);}
+.agent-icon{
+  width:32px;height:32px;border-radius:9px;
+  background:var(--surface2);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;
+}
+.agent-info{flex:1;min-width:0;}
+.agent-name{font-size:13px;font-weight:600;color:var(--text);}
+.agent-role{font-size:10px;color:var(--muted2);margin-top:1px;}
+.agent-badge{font-size:11px;color:var(--muted2);font-weight:600;}
+.agent-dot{
+  width:6px;height:6px;border-radius:50%;
+  position:absolute;bottom:9px;left:36px;
+  background:var(--green);
+}
+.agent-dot.offline{background:var(--muted);}
 
-  /* ============ TAB 1: DIÁRIO ============ */
-  #tab-diario { display: flex; width: 100%; height: 100%; }
-  .sidebar { width: 220px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
-  .sidebar-label { padding: 16px 16px 8px; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
-  .agent-item { padding: 10px 12px; margin: 2px 8px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: background 0.15s; }
-  .agent-item:hover { background: var(--surface2); }
-  .agent-item.active { background: rgba(232,184,75,0.12); border: 1px solid rgba(232,184,75,0.25); }
-  .agent-avatar { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-  .agent-info { flex: 1; min-width: 0; }
-  .agent-name { font-size: 13px; font-weight: 600; }
-  .agent-role { font-size: 11px; color: var(--muted); }
+.sidebar-footer{margin-top:auto;padding:12px;border-top:1px solid var(--border);}
+.briefing-card{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:12px;}
+.briefing-label{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.briefing-title{font-size:12px;font-weight:600;color:var(--text);}
+.briefing-time{font-size:11px;color:var(--muted2);margin-top:3px;display:flex;align-items:center;gap:4px;}
 
-  .chat-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-  .chat-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-  .chat-header-info h3 { font-size: 15px; font-weight: 600; }
-  .chat-header-info p { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
-  .message { display: flex; gap: 10px; max-width: 80%; animation: fadeIn 0.3s ease; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-  .message.user { align-self: flex-end; flex-direction: row-reverse; }
-  .msg-avatar { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; background: var(--surface2); }
-  .msg-bubble { padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.5; max-width: 100%; }
-  .message.bot .msg-bubble { background: var(--surface2); border: 1px solid var(--border); border-top-left-radius: 4px; }
-  .message.user .msg-bubble { background: rgba(232,184,75,0.15); border: 1px solid rgba(232,184,75,0.3); border-top-right-radius: 4px; color: var(--text); }
-  .message.bot.thinking .msg-bubble { opacity: 0.6; }
-  .typing { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
-  .typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: typing 1.2s infinite; }
-  .typing span:nth-child(2) { animation-delay: 0.2s; }
-  .typing span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes typing { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+/* ── MAIN AREA ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 
-  .chat-input-area { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; flex-shrink: 0; }
-  .chat-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; font-size: 14px; color: var(--text); outline: none; resize: none; min-height: 44px; max-height: 120px; transition: border-color 0.2s; font-family: inherit; }
-  .chat-input:focus { border-color: var(--accent); }
-  .send-btn { width: 44px; height: 44px; background: var(--accent); border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; flex-shrink: 0; }
-  .send-btn:hover { background: var(--accent2); }
-  .send-btn svg { width: 18px; height: 18px; fill: #000; }
-  .clear-btn { padding: 0 14px; height: 44px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; color: var(--muted); font-size: 12px; transition: all 0.2s; }
-  .clear-btn:hover { border-color: var(--red); color: var(--red); }
+/* ── TAB PAGES ── */
+.tab-page{display:none;flex:1;overflow:hidden;}
+.tab-page.active{display:flex;}
 
-  /* ============ TAB 2: ESTRATÉGIA ============ */
-  #tab-estrategia { display: none; width: 100%; height: 100%; }
-  .pro-layout { display: flex; width: 100%; height: 100%; }
-  .pro-sidebar { width: 260px; background: var(--surface); border-right: 1px solid var(--border); overflow-y: auto; flex-shrink: 0; padding: 12px 0; }
-  .pro-section { margin-bottom: 8px; }
-  .pro-section-label { padding: 8px 16px; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
-  .pro-agent-item { padding: 9px 12px; margin: 1px 8px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: background 0.15s; }
-  .pro-agent-item:hover { background: var(--surface2); }
-  .pro-agent-item.active { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); }
-  .pro-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
-  .pro-agent-info { flex: 1; min-width: 0; }
-  .pro-agent-name { font-size: 12px; font-weight: 600; }
-  .pro-agent-desc { font-size: 10px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* ── TAB DIÁRIO ── */
+#page-diario{flex-direction:row;}
+.diario-center{flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border);}
+.diario-right{width:280px;display:flex;flex-direction:column;background:var(--nav);overflow-y:auto;}
 
-  .pro-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-  .pro-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-  .pro-header h2 { font-size: 18px; font-weight: 700; }
-  .pro-header p { font-size: 13px; color: var(--muted); margin-top: 4px; }
-  .pro-content { flex: 1; overflow-y: auto; padding: 24px; display: flex; gap: 24px; }
-  .pro-form-panel { flex: 0 0 340px; display: flex; flex-direction: column; gap: 16px; }
-  .pro-output-panel { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; overflow-y: auto; min-height: 300px; }
+/* Stats */
+.stats-section{padding:20px;border-bottom:1px solid var(--border);}
+.stats-header{margin-bottom:14px;}
+.stats-breadcrumb{font-size:11px;color:var(--muted2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px;}
+.stats-title{font-size:26px;font-weight:800;color:var(--text);letter-spacing:-.3px;}
+.stats-sub{font-size:13px;color:var(--muted2);margin-top:3px;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.stat-card{
+  background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:16px;
+  position:relative;cursor:default;
+  transition:all .25s;
+  animation:float-card 5s ease-in-out infinite;
+}
+.stat-card:nth-child(2){animation-delay:1.2s;}
+.stat-card:nth-child(3){animation-delay:2.4s;}
+.stat-card:nth-child(4){animation-delay:3.6s;}
+@keyframes float-card{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.stat-card:hover{border-color:var(--blue);box-shadow:0 8px 24px var(--blue-glow);animation-play-state:paused;transform:translateY(-6px);}
+.stat-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.stat-icon{width:36px;height:36px;border-radius:10px;background:var(--blue-dim);border:1px solid rgba(37,99,235,.2);display:flex;align-items:center;justify-content:center;}
+.stat-icon svg{width:16px;height:16px;fill:var(--blue);}
+.stat-delta{font-size:11px;font-weight:700;color:var(--blue);}
+.stat-value{font-size:28px;font-weight:800;color:var(--text);letter-spacing:-.5px;}
+.stat-label{font-size:12px;color:var(--muted2);margin-top:2px;}
 
-  .form-group { display: flex; flex-direction: column; gap: 6px; }
-  .form-group label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-  .form-group input, .form-group textarea, .form-group select { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 13px; color: var(--text); outline: none; transition: border-color 0.2s; font-family: inherit; }
-  .form-group input:focus, .form-group textarea:focus { border-color: var(--pro); }
-  .form-group textarea { resize: vertical; min-height: 80px; }
-  .generate-btn { padding: 12px 20px; background: var(--pro); border: none; border-radius: 10px; color: #000; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-  .generate-btn:hover { background: #d97706; transform: translateY(-1px); }
-  .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+/* Chat */
+.chat-section{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.chat-header-bar{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.chat-agent-pill{display:flex;align-items:center;gap:8px;}
+.chat-agent-avatar{width:30px;height:30px;border-radius:8px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;}
+.chat-agent-name{font-size:13px;font-weight:600;}
+.chat-agent-status{font-size:11px;color:var(--green);margin-top:1px;}
+.chat-hist{font-size:12px;color:var(--muted2);margin-left:auto;cursor:pointer;}
+.chat-hist:hover{color:var(--text);}
+.messages{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px;}
+.msg{display:flex;gap:10px;max-width:85%;animation:msgIn .3s ease;}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{align-self:flex-end;flex-direction:row-reverse;}
+.msg-av{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.msg-av.bot{background:var(--blue);}
+.msg-av.user{background:linear-gradient(135deg,#4b5578,#6b7499);}
+.msg-av.bot span{font-size:10px;}
+.bubble{padding:10px 14px;border-radius:11px;font-size:13px;line-height:1.55;}
+.msg.bot .bubble{background:var(--surface2);border:1px solid var(--border2);border-top-left-radius:3px;}
+.msg.user .bubble{background:var(--blue);border-top-right-radius:3px;color:#fff;}
+.typing{display:flex;gap:4px;align-items:center;padding:4px 0;}
+.typing span{width:5px;height:5px;border-radius:50%;background:var(--muted2);animation:typing 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes typing{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
 
-  .output-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 12px; color: var(--muted); text-align: center; }
-  .output-placeholder .icon { font-size: 48px; opacity: 0.3; }
-  .output-placeholder p { font-size: 14px; }
-  .output-content { font-size: 14px; line-height: 1.7; }
-  .output-content h1, .output-content h2, .output-content h3 { color: var(--pro); margin: 16px 0 8px; }
-  .output-content h1 { font-size: 18px; }
-  .output-content h2 { font-size: 16px; }
-  .output-content h3 { font-size: 14px; }
-  .output-content p { margin-bottom: 10px; color: var(--text); }
-  .output-content ul, .output-content ol { padding-left: 20px; margin-bottom: 10px; }
-  .output-content li { margin-bottom: 4px; }
-  .output-content strong { color: var(--accent); }
-  .output-content hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
-  .output-content code { background: var(--surface2); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
-  .output-content blockquote { border-left: 3px solid var(--pro); padding-left: 12px; color: var(--muted); font-style: italic; }
+.chat-input-bar{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;background:var(--nav);}
+.chat-input-wrap{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:0 12px;transition:border-color .2s;}
+.chat-input-wrap:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.chat-input{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:13px;padding:11px 0;font-family:inherit;}
+.chat-input::placeholder{color:var(--muted);}
+.send-btn{width:40px;height:40px;background:var(--blue);border:none;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;box-shadow:0 0 12px var(--blue-glow);}
+.send-btn:hover{background:var(--blue2);transform:scale(1.05);}
+.send-btn svg{width:16px;height:16px;fill:#fff;}
+.clear-btn{padding:0 12px;height:40px;background:var(--surface2);border:1px solid var(--border2);border-radius:9px;cursor:pointer;color:var(--muted2);font-size:12px;transition:all .2s;}
+.clear-btn:hover{border-color:var(--red);color:var(--red);}
 
-  .output-actions { display: flex; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); flex-shrink: 0; }
-  .copy-btn { padding: 8px 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 12px; cursor: pointer; transition: all 0.2s; }
-  .copy-btn:hover { border-color: var(--pro); color: var(--pro); }
+/* Right panel */
+.panel-section{padding:16px;border-bottom:1px solid var(--border);}
+.panel-label{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.panel-icon{width:16px;height:16px;fill:var(--muted2);}
 
-  /* ============ TAB 3: DEMO ============ */
-  #tab-demo { display: none; width: 100%; height: 100%; }
-  .demo-layout { width: 100%; height: 100%; display: flex; flex-direction: column; }
-  .demo-header { padding: 20px 32px; border-bottom: 1px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; }
-  .demo-title { font-size: 22px; font-weight: 800; }
-  .demo-title span { color: var(--demo); }
-  .demo-subtitle { font-size: 13px; color: var(--muted); margin-top: 4px; }
-  .demo-live { display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(236,72,153,0.1); border: 1px solid rgba(236,72,153,0.3); border-radius: 20px; font-size: 12px; color: var(--demo); font-weight: 600; }
-  .demo-content { flex: 1; overflow-y: auto; padding: 24px 32px; }
-  .demo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 1100px; }
-  .demo-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; transition: all 0.2s; cursor: pointer; }
-  .demo-card:hover { border-color: var(--demo); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(236,72,153,0.1); }
-  .demo-card.selected { border-color: var(--demo); background: rgba(236,72,153,0.05); }
-  .demo-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-  .demo-card-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; background: rgba(236,72,153,0.1); }
-  .demo-card-title { font-size: 16px; font-weight: 700; }
-  .demo-card-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .demo-fields { display: flex; flex-direction: column; gap: 10px; }
-  .demo-field { display: flex; flex-direction: column; gap: 4px; }
-  .demo-field label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-  .demo-field input, .demo-field textarea { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; font-size: 13px; color: var(--text); outline: none; transition: border-color 0.2s; font-family: inherit; width: 100%; }
-  .demo-field input:focus, .demo-field textarea:focus { border-color: var(--demo); }
-  .demo-run-btn { margin-top: 12px; padding: 11px 20px; background: var(--demo); border: none; border-radius: 9px; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; width: 100%; }
-  .demo-run-btn:hover { background: #db2777; }
-  .demo-run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.pipeline-item{margin-bottom:12px;}
+.pipeline-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.pipeline-name{font-size:12px;font-weight:500;color:var(--text);}
+.pipeline-pct{font-size:12px;color:var(--muted2);}
+.pipeline-bar{height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;}
+.pipeline-fill{height:100%;background:var(--blue);border-radius:2px;transition:width 1s ease;}
 
-  /* Demo output overlay */
-  .demo-output-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; padding: 24px; }
-  .demo-output-overlay.show { display: flex; }
-  .demo-output-box { background: var(--surface); border: 1px solid var(--demo); border-radius: 16px; max-width: 800px; width: 100%; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; }
-  .demo-output-top { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-  .demo-output-top h3 { font-size: 16px; font-weight: 700; color: var(--demo); }
-  .demo-close { padding: 6px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--muted); cursor: pointer; font-size: 12px; }
-  .demo-output-body { flex: 1; overflow-y: auto; padding: 20px; font-size: 14px; line-height: 1.7; }
-  .demo-output-body h1, .demo-output-body h2, .demo-output-body h3 { color: var(--demo); margin: 12px 0 6px; }
-  .demo-output-body p { margin-bottom: 8px; }
-  .demo-output-body ul, .demo-output-body ol { padding-left: 20px; margin-bottom: 8px; }
-  .demo-output-body li { margin-bottom: 3px; }
-  .demo-output-body strong { color: var(--accent); }
-  .demo-output-body hr { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
-  .demo-output-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-shrink: 0; }
+.team-avatars{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.team-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;border:2px solid var(--nav);}
+.team-desc{font-size:11px;color:var(--muted2);line-height:1.5;}
 
-  /* Spinner */
-  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(0,0,0,0.3); border-top-color: #000; border-radius: 50%; animation: spin 0.8s linear infinite; }
-  .spinner-light { border-color: rgba(255,255,255,0.3); border-top-color: #fff; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* ── TAB ESTRATÉGIA ── */
+#page-estrategia{flex-direction:row;}
+.pro-sidebar{width:240px;background:var(--nav);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;padding:10px 0;}
+.pro-section-label{padding:10px 16px 6px;font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
+.pro-agent-item{padding:9px 12px;margin:1px 8px;border-radius:9px;cursor:pointer;display:flex;align-items:center;gap:9px;transition:all .2s;border:1px solid transparent;}
+.pro-agent-item:hover{background:var(--blue-dim);border-color:rgba(37,99,235,.15);}
+.pro-agent-item.active{background:var(--blue-dim);border-color:rgba(37,99,235,.3);}
+.pro-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:var(--surface2);border:1px solid var(--border2);}
+.pro-info .pro-name{font-size:12px;font-weight:600;color:var(--text);}
+.pro-info .pro-desc{font-size:10px;color:var(--muted2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;}
 
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+.pro-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.pro-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.pro-header h2{font-size:18px;font-weight:700;}
+.pro-header p{font-size:13px;color:var(--muted2);margin-top:4px;}
+.pro-body{flex:1;overflow-y:auto;padding:24px;display:flex;gap:24px;}
+.pro-form{flex:0 0 320px;display:flex;flex-direction:column;gap:14px;}
+.pro-output{flex:1;background:var(--card);border:1px solid var(--border2);border-radius:14px;padding:20px;overflow-y:auto;}
+
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-group label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;}
+.form-group input,.form-group textarea{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;font-size:13px;color:var(--text);outline:none;transition:all .2s;font-family:inherit;}
+.form-group input:focus,.form-group textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.form-group input::placeholder,.form-group textarea::placeholder{color:var(--muted);}
+.form-group textarea{resize:vertical;min-height:72px;}
+.gen-btn{padding:12px;background:var(--blue);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 0 16px var(--blue-glow);}
+.gen-btn:hover{background:var(--blue2);transform:translateY(-2px);box-shadow:0 0 24px var(--blue-glow);}
+.gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+
+.output-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--muted);text-align:center;}
+.output-empty .ico{font-size:40px;opacity:.2;}
+.output-content{font-size:13px;line-height:1.75;}
+.output-content h1,.output-content h2,.output-content h3{color:var(--blue);margin:16px 0 7px;}
+.output-content h1{font-size:17px;} .output-content h2{font-size:15px;} .output-content h3{font-size:13px;color:var(--muted2);}
+.output-content p{margin-bottom:9px;}
+.output-content ul,.output-content ol{padding-left:18px;margin-bottom:9px;}
+.output-content li{margin-bottom:4px;}
+.output-content strong{color:var(--text);}
+.output-content hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
+.output-content code{background:var(--blue-dim);padding:2px 6px;border-radius:4px;font-size:11px;color:var(--blue);}
+.output-actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.copy-btn{padding:7px 14px;background:var(--surface2);border:1px solid var(--border2);border-radius:7px;color:var(--muted2);font-size:12px;cursor:pointer;transition:all .2s;}
+.copy-btn:hover{border-color:var(--blue);color:var(--blue);}
+
+/* ── TAB DEMO ── */
+#page-demo{flex-direction:column;}
+.demo-hdr{padding:18px 28px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;background:var(--nav);}
+.demo-hdr-left h2{font-size:22px;font-weight:800;}
+.demo-hdr-left h2 span{color:var(--blue);}
+.demo-hdr-left p{font-size:13px;color:var(--muted2);margin-top:3px;}
+.demo-live{display:flex;align-items:center;gap:6px;padding:7px 16px;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.3);border-radius:20px;font-size:12px;color:var(--blue);font-weight:600;animation:demo-pulse 2s ease-in-out infinite;}
+@keyframes demo-pulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.2)}50%{box-shadow:0 0 12px 2px rgba(37,99,235,.2)}}
+.demo-body{flex:1;overflow-y:auto;padding:24px 28px;}
+.demo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;max-width:1000px;}
+.demo-card{
+  background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:22px;
+  cursor:pointer;transition:all .3s;position:relative;overflow:hidden;
+  animation:float-card 6s ease-in-out infinite;
+}
+.demo-card:nth-child(2){animation-delay:1.5s;} .demo-card:nth-child(3){animation-delay:3s;} .demo-card:nth-child(4){animation-delay:4.5s;}
+.demo-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(37,99,235,.5),transparent);opacity:0;transition:opacity .3s;}
+.demo-card:hover{border-color:var(--blue);box-shadow:0 12px 32px var(--blue-glow);animation-play-state:paused;transform:translateY(-6px);}
+.demo-card:hover::before{opacity:1;}
+.demo-card-top{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.demo-card-icon{width:44px;height:44px;border-radius:12px;background:var(--blue-dim);border:1px solid rgba(37,99,235,.2);display:flex;align-items:center;justify-content:center;font-size:20px;}
+.demo-card-title{font-size:15px;font-weight:700;}
+.demo-card-sub{font-size:11px;color:var(--muted2);margin-top:2px;}
+.demo-fields{display:flex;flex-direction:column;gap:9px;}
+.demo-field{display:flex;flex-direction:column;gap:4px;}
+.demo-field label{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;}
+.demo-field input{background:var(--surface2);border:1px solid var(--border2);border-radius:7px;padding:8px 11px;font-size:13px;color:var(--text);outline:none;transition:all .2s;font-family:inherit;width:100%;}
+.demo-field input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.demo-field input::placeholder{color:var(--muted);}
+.demo-run{margin-top:10px;padding:10px;background:var(--blue);border:none;border-radius:9px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;width:100%;box-shadow:0 0 10px var(--blue-glow);}
+.demo-run:hover{background:var(--blue2);transform:translateY(-2px);box-shadow:0 0 20px var(--blue-glow);}
+.demo-run:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* Demo overlay */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);z-index:100;align-items:center;justify-content:center;padding:24px;}
+.overlay.show{display:flex;}
+.overlay-box{background:var(--surface);border:1px solid var(--blue);border-radius:18px;max-width:800px;width:100%;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 0 60px var(--blue-glow),0 24px 80px rgba(0,0,0,.6);animation:overlayIn .3s ease;}
+@keyframes overlayIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.overlay-top{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--blue-dim);}
+.overlay-top h3{font-size:15px;font-weight:700;color:var(--blue);}
+.overlay-close{padding:5px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--muted2);cursor:pointer;font-size:12px;transition:all .2s;}
+.overlay-close:hover{border-color:var(--red);color:var(--red);}
+.overlay-body{flex:1;overflow-y:auto;padding:20px;font-size:13px;line-height:1.75;}
+.overlay-body h1,.overlay-body h2,.overlay-body h3{color:var(--blue);margin:12px 0 6px;}
+.overlay-body p{margin-bottom:8px;} .overlay-body ul,.overlay-body ol{padding-left:18px;margin-bottom:8px;} .overlay-body li{margin-bottom:3px;} .overlay-body strong{color:var(--text);}
+.overlay-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;}
+
+/* Spinner */
+.spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(37,99,235,.3);border-top-color:var(--blue);border-radius:50%;animation:spinA .7s linear infinite;}
+.spin-w{border-color:rgba(255,255,255,.2);border-top-color:#fff;}
+@keyframes spinA{to{transform:rotate(360deg)}}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;} ::-webkit-scrollbar-track{background:transparent;} ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;} ::-webkit-scrollbar-thumb:hover{background:var(--muted);}
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
-<div class="header">
-  <div class="logo">
-    <div class="logo-mark">K2</div>
-    <div class="logo-text">K2.<span>FIRST</span> Agentes IA</div>
+<header class="header">
+  <div class="logo-wrap">
+    <img class="logo-img" src="https://id-preview--b8e7d0ae-1179-41a2-bd27-703146dd3679.lovable.app/assets/k2first-logo-CtdvQa_M.png"
+         onerror="this.style.display='none';document.getElementById('logoFallback').style.display='flex'" alt="K2 FIRST">
+    <div class="logo-fallback" id="logoFallback" style="display:none">K2</div>
   </div>
+  <nav class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('diario')" id="btn-diario">
+      <svg viewBox="0 0 24 24"><path d="M13 2.05v2.02c3.95.49 7 3.85 7 7.93 0 3.21-1.81 6-4.72 7.28L13 17v5h5l-1.22-1.22C19.91 19.07 22 15.76 22 12c0-5.18-3.95-9.45-9-9.95zM11 2.05C5.95 2.55 2 6.82 2 12c0 3.76 2.09 7.07 5.22 8.78L6 22h5V2.05z"/></svg>
+      Diário
+    </button>
+    <button class="nav-tab" onclick="switchTab('estrategia')" id="btn-estrategia">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+      Estratégia
+    </button>
+    <button class="nav-tab" onclick="switchTab('demo')" id="btn-demo">
+      <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+      Demo Cliente
+    </button>
+  </nav>
   <div class="header-right">
-    <div class="status-pill"><div class="status-dot" id="statusDot"></div><span id="statusText">A verificar...</span></div>
-    <div class="model-badge">claude-sonnet-4-6</div>
+    <div class="sys-status"><div class="sys-dot" id="sysDot"></div><span id="sysText">A verificar...</span></div>
+    <div class="avatar">MR</div>
   </div>
-</div>
-
-<!-- TABS -->
-<div class="tabs">
-  <div class="tab active-daily" onclick="switchTab('diario')" id="tab-btn-diario">
-    ⚡ Diário <span class="tab-badge badge-daily">2</span>
-  </div>
-  <div class="tab" onclick="switchTab('estrategia')" id="tab-btn-estrategia">
-    🧠 Estratégia <span class="tab-badge badge-pro">8</span>
-  </div>
-  <div class="tab" onclick="switchTab('demo')" id="tab-btn-demo">
-    🎯 Demo Cliente <span class="tab-badge badge-demo">4</span>
-  </div>
-</div>
+</header>
 
 <!-- CONTENT -->
 <div class="content">
 
-  <!-- ========== TAB 1: DIÁRIO ========== -->
-  <div id="tab-diario" style="display:flex;width:100%;height:100%;">
-    <div class="sidebar">
-      <div class="sidebar-label">Agentes</div>
-      <div class="agent-item active" onclick="selectDailyAgent('nova')" id="agent-nova">
-        <div class="agent-avatar" style="background:rgba(168,85,247,0.15)">🟣</div>
-        <div class="agent-info">
-          <div class="agent-name">Nova</div>
-          <div class="agent-role">Marketing & Conteúdo</div>
+  <!-- SIDEBAR (always visible) -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-label">Agentes</span>
+      <span class="agent-count" id="agentCount">2</span>
+    </div>
+    <div class="agent-item active" onclick="selectAgent('nova')" id="ag-nova">
+      <div class="agent-icon">🟣</div>
+      <div class="agent-info"><div class="agent-name">Nova</div><div class="agent-role">Marketing & Conteúdo</div></div>
+      <span class="agent-badge" id="badge-nova"></span>
+      <div class="agent-dot"></div>
+    </div>
+    <div class="agent-item" onclick="selectAgent('atendimento')" id="ag-atendimento">
+      <div class="agent-icon">🤖</div>
+      <div class="agent-info"><div class="agent-name">Atendimento</div><div class="agent-role">WhatsApp Bot</div></div>
+      <span class="agent-badge" id="badge-atendimento"></span>
+      <div class="agent-dot"></div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="briefing-card">
+        <div class="briefing-label">Próximo Briefing</div>
+        <div class="briefing-title">Apresentação cliente</div>
+        <div class="briefing-time">📅 Hoje · 16:00</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- TAB: DIÁRIO -->
+    <div class="tab-page active" id="page-diario">
+      <div class="diario-center">
+        <!-- Stats -->
+        <div class="stats-section">
+          <div class="stats-header">
+            <div class="stats-breadcrumb">Diário · K2 FIRST</div>
+            <div class="stats-title">Comando central de agentes</div>
+            <div class="stats-sub">Visão consolidada da operação de IA.</div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-top">
+                <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg></div>
+                <span class="stat-delta">+18%</span>
+              </div>
+              <div class="stat-value">1,284</div>
+              <div class="stat-label">Tarefas automatizadas</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-top">
+                <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></div>
+                <span class="stat-delta">+24%</span>
+              </div>
+              <div class="stat-value">342h</div>
+              <div class="stat-label">Horas poupadas</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-top">
+                <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>
+                <span class="stat-delta">+6%</span>
+              </div>
+              <div class="stat-value" id="statConversas">0</div>
+              <div class="stat-label">Conversas ativas</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-top">
+                <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></div>
+                <span class="stat-delta">+2</span>
+              </div>
+              <div class="stat-value">12</div>
+              <div class="stat-label">Pipelines em execução</div>
+            </div>
+          </div>
+        </div>
+        <!-- Chat -->
+        <div class="chat-section">
+          <div class="chat-header-bar">
+            <div class="chat-agent-pill">
+              <div class="chat-agent-avatar" id="chatAv"><span>N</span></div>
+              <div><div class="chat-agent-name" id="chatName">Nova</div><div class="chat-agent-status">Ativo · contexto carregado</div></div>
+            </div>
+            <div class="chat-hist" onclick="clearChat()">Limpar</div>
+          </div>
+          <div class="messages" id="messages"></div>
+          <div class="chat-input-bar">
+            <div class="chat-input-wrap">
+              <input class="chat-input" id="chatInput" placeholder="Mensagem para Nova..." onkeydown="handleKey(event)">
+            </div>
+            <button class="send-btn" onclick="sendMsg()"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+          </div>
         </div>
       </div>
-      <div class="agent-item" onclick="selectDailyAgent('atendimento')" id="agent-atendimento">
-        <div class="agent-avatar" style="background:rgba(34,197,94,0.15)">🤖</div>
-        <div class="agent-info">
-          <div class="agent-name">Atendimento</div>
-          <div class="agent-role">Teste WhatsApp Bot</div>
+
+      <!-- Right panel -->
+      <div class="diario-right">
+        <div class="panel-section">
+          <div class="panel-label">
+            Pipelines vivos
+            <svg class="panel-icon" viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+          </div>
+          <div class="pipeline-item">
+            <div class="pipeline-top"><span class="pipeline-name">Outbound Q4</span><span class="pipeline-pct">78%</span></div>
+            <div class="pipeline-bar"><div class="pipeline-fill" style="width:78%"></div></div>
+          </div>
+          <div class="pipeline-item">
+            <div class="pipeline-top"><span class="pipeline-name">Onboarding Auto</span><span class="pipeline-pct">54%</span></div>
+            <div class="pipeline-bar"><div class="pipeline-fill" style="width:54%"></div></div>
+          </div>
+          <div class="pipeline-item">
+            <div class="pipeline-top"><span class="pipeline-name">Inbox Triage</span><span class="pipeline-pct">92%</span></div>
+            <div class="pipeline-bar"><div class="pipeline-fill" style="width:92%"></div></div>
+          </div>
         </div>
-      </div>
-      <div class="sidebar-label" style="margin-top:16px;">Info</div>
-      <div style="padding:0 16px;font-size:11px;color:var(--muted);line-height:1.6;">
-        Usa estes agentes para testar antes de publicar no WhatsApp. A Nova cria conteúdo de marketing para stands.
+        <div class="panel-section">
+          <div class="panel-label">Equipa</div>
+          <div class="team-avatars">
+            <div class="team-av" style="background:#2563EB">MR</div>
+            <div class="team-av" style="background:#7C3AED">JL</div>
+            <div class="team-av" style="background:#059669">AS</div>
+            <div class="team-av" style="background:#DC2626">PT</div>
+          </div>
+          <div class="team-desc">4 operadores · 2 agentes IA em colaboração contínua.</div>
+        </div>
       </div>
     </div>
 
-    <div class="chat-area">
-      <div class="chat-header">
-        <div class="agent-avatar" id="chatAvatar" style="background:rgba(168,85,247,0.15);width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">🟣</div>
-        <div class="chat-header-info">
-          <h3 id="chatName">Nova</h3>
-          <p id="chatDesc">Especialista em marketing para stands automóvel</p>
-        </div>
-      </div>
-
-      <div class="messages" id="messages">
-        <div class="message bot">
-          <div class="msg-avatar">🟣</div>
-          <div class="msg-bubble">Olá! Sou a <strong>Nova</strong>, especialista em marketing para stands automóvel. Posso criar posts para Instagram, Facebook, conteúdo para campanhas, anúncios e muito mais. Como posso ajudar?</div>
-        </div>
-      </div>
-
-      <div class="chat-input-area">
-        <textarea class="chat-input" id="chatInput" placeholder="Escreve aqui..." rows="1" onkeydown="handleKey(event)"></textarea>
-        <button class="clear-btn" onclick="clearChat()">Limpar</button>
-        <button class="send-btn" onclick="sendMessage()">
-          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========== TAB 2: ESTRATÉGIA ========== -->
-  <div id="tab-estrategia" style="display:none;width:100%;height:100%;">
-    <div class="pro-layout">
+    <!-- TAB: ESTRATÉGIA -->
+    <div class="tab-page" id="page-estrategia">
       <div class="pro-sidebar">
-        <div class="pro-section">
-          <div class="pro-section-label">🔍 Descoberta</div>
-          <div class="pro-agent-item active" onclick="selectProAgent('nicho-explorer')" id="pro-nicho-explorer">
-            <div class="pro-icon" style="background:rgba(59,130,246,0.15)">🌐</div>
-            <div class="pro-agent-info">
-              <div class="pro-agent-name">Explorar Nicho</div>
-              <div class="pro-agent-desc">Valida GO/NÃO-GO de mercado</div>
-            </div>
-          </div>
-          <div class="pro-agent-item" onclick="selectProAgent('mapear-nicho')" id="pro-mapear-nicho">
-            <div class="pro-icon" style="background:rgba(59,130,246,0.15)">🗺️</div>
-            <div class="pro-agent-info">
-              <div class="pro-agent-name">Mapear Nicho</div>
-              <div class="pro-agent-desc">ICP, dores, mecanismo, oferta</div>
-            </div>
-          </div>
-          <div class="pro-agent-item" onclick="selectProAgent('cliente-radar')" id="pro-cliente-radar">
-            <div class="pro-icon" style="background:rgba(59,130,246,0.15)">📡</div>
-            <div class="pro-agent-info">
-              <div class="pro-agent-name">Radar de Cliente</div>
-              <div class="pro-agent-desc">Pesquisa profunda do prospect</div>
-            </div>
-          </div>
-        </div>
-        <div class="pro-section">
-          <div class="pro-section-label">📄 Documentos</div>
-          <div class="pro-agent-item" onclick="selectProAgent('lp-builder')" id="pro-lp-builder">
-            <div class="pro-icon" style="background:rgba(168,85,247,0.15)">🖥️</div>
-            <div class="pro-agent-info">
-              <div class="pro-agent-name">Landing Page</div>
-              <div class="pro-agent-desc">Copy + HTML completo</div>
-            </div>
-          </div>
-          <div class="pro-agent-item" onclick="selectProAgent('pitch-deck')" id="pro-pitch-deck">
-            <div class="pro-icon" style="background:rgba(168,85,247,0.15)">📊</div>
-            <div class="pro-agent-info">
-              <div class="pro-agent-name">Pitch Deck</div>
-              <div class="pro-agent-desc">20 slides comerciais</div>
-            </div>
-          </div>
-          <div class="pro-agent-item" onclick="selectProAgent('meeting-prep')" id="pro-meeting-prep">
-            <div class="pro-icon" style="background:rgba(168,85,247,0.15)">📋</div>
-            <div class="pro-agent-info">
-              <div class="pro-agent-name">Prep de Reunião</div>
-              <div class="pro-agent-desc">Briefing 1 página</div>
-            </div>
-          </div>
-        </div>
-        <div class="pro-section">
-          <div class="pro-section-label">🚀 Go-to-Market</div>
-          <div class="pro-agent-item" onclick="selectProAgent('gtm')" id="pro-gtm">
-            <div class="pro-icon" style="background:rgba(34,197,94,0.15)">📈</div>
-            <div class="pro-agent-info">
-              <div class="pro-agent-name">GTM Architect</div>
-              <div class="pro-agent-desc">Outbound + calendário mês 1</div>
-            </div>
-          </div>
-          <div class="pro-agent-item" onclick="selectProAgent('playbook')" id="pro-playbook">
-            <div class="pro-icon" style="background:rgba(34,197,94,0.15)">📖</div>
-            <div class="pro-agent-info">
-              <div class="pro-agent-name">Playbook de Vendas</div>
-              <div class="pro-agent-desc">Script 30min + objeções + funil</div>
-            </div>
-          </div>
-        </div>
+        <div class="pro-section-label">🔍 Descoberta</div>
+        <div class="pro-agent-item active" onclick="selPro('nicho-explorer')" id="pro-nicho-explorer"><div class="pro-icon">🌐</div><div class="pro-info"><div class="pro-name">Explorar Nicho</div><div class="pro-desc">Valida GO/NÃO-GO de mercado</div></div></div>
+        <div class="pro-agent-item" onclick="selPro('mapear-nicho')" id="pro-mapear-nicho"><div class="pro-icon">🗺️</div><div class="pro-info"><div class="pro-name">Mapear Nicho</div><div class="pro-desc">ICP, dores, mecanismo, oferta</div></div></div>
+        <div class="pro-agent-item" onclick="selPro('cliente-radar')" id="pro-cliente-radar"><div class="pro-icon">📡</div><div class="pro-info"><div class="pro-name">Radar de Cliente</div><div class="pro-desc">Pesquisa profunda do prospect</div></div></div>
+        <div class="pro-section-label">📄 Documentos</div>
+        <div class="pro-agent-item" onclick="selPro('lp-builder')" id="pro-lp-builder"><div class="pro-icon">🖥️</div><div class="pro-info"><div class="pro-name">Landing Page</div><div class="pro-desc">Copy + HTML completo</div></div></div>
+        <div class="pro-agent-item" onclick="selPro('pitch-deck')" id="pro-pitch-deck"><div class="pro-icon">📊</div><div class="pro-info"><div class="pro-name">Pitch Deck</div><div class="pro-desc">20 slides comerciais</div></div></div>
+        <div class="pro-agent-item" onclick="selPro('meeting-prep')" id="pro-meeting-prep"><div class="pro-icon">📋</div><div class="pro-info"><div class="pro-name">Prep de Reunião</div><div class="pro-desc">Briefing 1 página</div></div></div>
+        <div class="pro-section-label">🚀 Go-to-Market</div>
+        <div class="pro-agent-item" onclick="selPro('gtm')" id="pro-gtm"><div class="pro-icon">📈</div><div class="pro-info"><div class="pro-name">GTM Architect</div><div class="pro-desc">Outbound + calendário mês 1</div></div></div>
+        <div class="pro-agent-item" onclick="selPro('playbook')" id="pro-playbook"><div class="pro-icon">📖</div><div class="pro-info"><div class="pro-name">Playbook de Vendas</div><div class="pro-desc">Script 30min + objeções</div></div></div>
       </div>
-
       <div class="pro-main">
-        <div class="pro-header">
-          <h2 id="proTitle">🌐 Explorar Nicho</h2>
-          <p id="proDesc">Valida se um nicho de mercado é GO ou NÃO-GO com análise completa de oportunidade</p>
-        </div>
-        <div class="pro-content">
-          <div class="pro-form-panel" id="proFormPanel">
-            <!-- Dynamic form -->
-          </div>
+        <div class="pro-header"><h2 id="proTitle">🌐 Explorar Nicho</h2><p id="proDesc">Valida se um nicho de mercado é GO ou NÃO-GO</p></div>
+        <div class="pro-body">
+          <div class="pro-form" id="proForm"></div>
           <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
-            <div class="pro-output-panel" id="proOutput">
-              <div class="output-placeholder">
-                <div class="icon">🧠</div>
-                <p>Preenche o formulário e clica em <strong>Gerar</strong> para o agente trabalhar</p>
-              </div>
-            </div>
-            <div class="output-actions" id="proOutputActions" style="display:none;padding:12px 0 0;">
-              <button class="copy-btn" onclick="copyOutput()">📋 Copiar texto</button>
-              <button class="copy-btn" onclick="clearOutput()">🗑️ Limpar</button>
+            <div class="pro-output" id="proOutput"><div class="output-empty"><div class="ico">🧠</div><p>Preenche o formulário e clica em <strong>Gerar</strong></p></div></div>
+            <div class="output-actions" id="proActions" style="display:none;padding:10px 0 0;">
+              <button class="copy-btn" onclick="copyPro()">📋 Copiar</button>
+              <button class="copy-btn" onclick="clearPro()">🗑️ Limpar</button>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- ========== TAB 3: DEMO ========== -->
-  <div id="tab-demo" style="display:none;width:100%;height:100%;">
-    <div class="demo-layout">
-      <div class="demo-header">
-        <div>
-          <div class="demo-title">Modo <span>Demo</span></div>
-          <div class="demo-subtitle">Apresentação ao vivo para potenciais clientes — 4 agentes mais impactantes</div>
-        </div>
-        <div class="demo-live"><div class="status-dot"></div> Ao vivo</div>
+    <!-- TAB: DEMO -->
+    <div class="tab-page" id="page-demo">
+      <div class="demo-hdr">
+        <div class="demo-hdr-left"><h2>Modo <span>Demo</span></h2><p>4 agentes mais impactantes para apresentações ao vivo</p></div>
+        <div class="demo-live"><div class="sys-dot"></div> Ao vivo</div>
       </div>
-      <div class="demo-content">
+      <div class="demo-body">
         <div class="demo-grid">
-
-          <!-- Card 1: Cliente Radar -->
-          <div class="demo-card" id="demo-card-radar">
-            <div class="demo-card-header">
-              <div class="demo-card-icon">📡</div>
-              <div>
-                <div class="demo-card-title">Radar de Cliente</div>
-                <div class="demo-card-sub">Pesquisa o negócio do prospecto em tempo real</div>
-              </div>
-            </div>
-            <div class="demo-fields">
-              <div class="demo-field">
-                <label>Nome da Empresa</label>
-                <input type="text" id="d-company" placeholder="ex: Stand Silva Automóveis">
-              </div>
-              <div class="demo-field">
-                <label>Sector</label>
-                <input type="text" id="d-sector" placeholder="ex: Comércio automóvel usado">
-              </div>
-              <div class="demo-field">
-                <label>Website (opcional)</label>
-                <input type="text" id="d-url" placeholder="ex: www.standsilvaauto.pt">
-              </div>
-              <button class="demo-run-btn" onclick="runDemo('cliente-radar')">🔍 Analisar Empresa</button>
-            </div>
-          </div>
-
-          <!-- Card 2: Meeting Prep -->
-          <div class="demo-card" id="demo-card-meeting">
-            <div class="demo-card-header">
-              <div class="demo-card-icon">📋</div>
-              <div>
-                <div class="demo-card-title">Prep de Reunião</div>
-                <div class="demo-card-sub">Briefing desta reunião em 1 página</div>
-              </div>
-            </div>
-            <div class="demo-fields">
-              <div class="demo-field">
-                <label>Empresa / Prospect</label>
-                <input type="text" id="m-company" placeholder="ex: Stand Silva Automóveis">
-              </div>
-              <div class="demo-field">
-                <label>Objetivo da Reunião</label>
-                <input type="text" id="m-objetivo" placeholder="ex: Apresentar sistema de agentes IA">
-              </div>
-              <div class="demo-field">
-                <label>Decisor / Responsável</label>
-                <input type="text" id="m-decisor" placeholder="ex: João Silva, Gerente">
-              </div>
-              <button class="demo-run-btn" onclick="runDemo('meeting-prep')">📋 Preparar Reunião</button>
-            </div>
-          </div>
-
-          <!-- Card 3: Playbook de Vendas -->
-          <div class="demo-card" id="demo-card-playbook">
-            <div class="demo-card-header">
-              <div class="demo-card-icon">📖</div>
-              <div>
-                <div class="demo-card-title">Playbook de Vendas</div>
-                <div class="demo-card-sub">Script 30min + objeções + funil para o nicho</div>
-              </div>
-            </div>
-            <div class="demo-fields">
-              <div class="demo-field">
-                <label>Nicho / Sector</label>
-                <input type="text" id="p-nicho" placeholder="ex: Stands automóvel usados Portugal">
-              </div>
-              <div class="demo-field">
-                <label>Produto / Serviço</label>
-                <input type="text" id="p-produto" placeholder="ex: Sistema de agentes IA para atendimento">
-              </div>
-              <div class="demo-field">
-                <label>Preço Aproximado</label>
-                <input type="text" id="p-preco" placeholder="ex: 297€/mês">
-              </div>
-              <button class="demo-run-btn" onclick="runDemo('playbook')">📖 Gerar Playbook</button>
-            </div>
-          </div>
-
-          <!-- Card 4: Pitch Deck -->
-          <div class="demo-card" id="demo-card-pitch">
-            <div class="demo-card-header">
-              <div class="demo-card-icon">📊</div>
-              <div>
-                <div class="demo-card-title">Pitch Deck</div>
-                <div class="demo-card-sub">Apresentação comercial personalizada para este cliente</div>
-              </div>
-            </div>
-            <div class="demo-fields">
-              <div class="demo-field">
-                <label>Empresa do Cliente</label>
-                <input type="text" id="pd-company" placeholder="ex: Stand Silva Automóveis">
-              </div>
-              <div class="demo-field">
-                <label>Principal Dor / Problema</label>
-                <input type="text" id="pd-dor" placeholder="ex: Perde leads por falta de resposta rápida">
-              </div>
-              <div class="demo-field">
-                <label>Solução a Propor</label>
-                <input type="text" id="pd-solucao" placeholder="ex: Agente IA de atendimento 24/7 WhatsApp">
-              </div>
-              <button class="demo-run-btn" onclick="runDemo('pitch-deck')">📊 Gerar Apresentação</button>
-            </div>
-          </div>
-
+          <div class="demo-card"><div class="demo-card-top"><div class="demo-card-icon">📡</div><div><div class="demo-card-title">Radar de Cliente</div><div class="demo-card-sub">Pesquisa o negócio do prospecto</div></div></div><div class="demo-fields"><div class="demo-field"><label>Nome da Empresa</label><input id="d-co" placeholder="ex: Stand Silva Automóveis"></div><div class="demo-field"><label>Sector</label><input id="d-sec" placeholder="ex: Comércio automóvel usado"></div><div class="demo-field"><label>Website (opcional)</label><input id="d-url" placeholder="ex: standsilvaauto.pt"></div><button class="demo-run" onclick="runDemo('cliente-radar')">🔍 Analisar Empresa</button></div></div>
+          <div class="demo-card"><div class="demo-card-top"><div class="demo-card-icon">📋</div><div><div class="demo-card-title">Prep de Reunião</div><div class="demo-card-sub">Briefing desta reunião em 1 página</div></div></div><div class="demo-fields"><div class="demo-field"><label>Empresa / Prospect</label><input id="m-co" placeholder="ex: Stand Silva Automóveis"></div><div class="demo-field"><label>Objetivo da Reunião</label><input id="m-obj" placeholder="ex: Apresentar agentes IA"></div><div class="demo-field"><label>Decisor</label><input id="m-dec" placeholder="ex: João Silva, Gerente"></div><button class="demo-run" onclick="runDemo('meeting-prep')">📋 Preparar Reunião</button></div></div>
+          <div class="demo-card"><div class="demo-card-top"><div class="demo-card-icon">📖</div><div><div class="demo-card-title">Playbook de Vendas</div><div class="demo-card-sub">Script 30min + objeções + funil</div></div></div><div class="demo-fields"><div class="demo-field"><label>Nicho / Sector</label><input id="p-ni" placeholder="ex: Stands automóvel Portugal"></div><div class="demo-field"><label>Produto / Serviço</label><input id="p-pr" placeholder="ex: Sistema agentes IA 24/7"></div><div class="demo-field"><label>Preço</label><input id="p-pc" placeholder="ex: 297€/mês"></div><button class="demo-run" onclick="runDemo('playbook')">📖 Gerar Playbook</button></div></div>
+          <div class="demo-card"><div class="demo-card-top"><div class="demo-card-icon">📊</div><div><div class="demo-card-title">Pitch Deck</div><div class="demo-card-sub">Apresentação personalizada para este cliente</div></div></div><div class="demo-fields"><div class="demo-field"><label>Empresa do Cliente</label><input id="pd-co" placeholder="ex: Stand Silva Automóveis"></div><div class="demo-field"><label>Principal Dor</label><input id="pd-dor" placeholder="ex: Perde leads por resposta lenta"></div><div class="demo-field"><label>Solução a Propor</label><input id="pd-sol" placeholder="ex: Agente IA atendimento 24/7"></div><button class="demo-run" onclick="runDemo('pitch-deck')">📊 Gerar Apresentação</button></div></div>
         </div>
       </div>
     </div>
-  </div>
 
+  </main>
 </div>
 
-<!-- Demo Output Overlay -->
-<div class="demo-output-overlay" id="demoOverlay">
-  <div class="demo-output-box">
-    <div class="demo-output-top">
-      <h3 id="demoOverlayTitle">Resultado</h3>
-      <button class="demo-close" onclick="closeDemoOverlay()">✕ Fechar</button>
-    </div>
-    <div class="demo-output-body" id="demoOverlayBody">
-      <div style="display:flex;align-items:center;gap:12px;color:var(--muted);padding:20px 0;">
-        <div class="spinner spinner-light"></div> A gerar...
-      </div>
-    </div>
-    <div class="demo-output-footer">
-      <button class="copy-btn" onclick="copyDemoOutput()">📋 Copiar</button>
-    </div>
+<!-- OVERLAY -->
+<div class="overlay" id="overlay">
+  <div class="overlay-box">
+    <div class="overlay-top"><h3 id="overlayTitle">Resultado</h3><button class="overlay-close" onclick="closeOverlay()">✕ Fechar</button></div>
+    <div class="overlay-body" id="overlayBody"></div>
+    <div class="overlay-footer"><button class="copy-btn" onclick="copyOverlay()">📋 Copiar</button></div>
   </div>
 </div>
 
 <script>
 const API = 'https://k2first.pt/agentes';
-let currentDailyAgent = 'nova';
-let currentProAgent = 'nicho-explorer';
-let lastOutputText = '';
-let lastDemoText = '';
+let curAgent = 'nova', curPro = 'nicho-explorer', lastPro = '', lastOverlay = '', msgCount = 0;
 
-// ========== STATUS CHECK ==========
+// STATUS
 async function checkStatus() {
   try {
-    const r = await fetch(API + '/status', { signal: AbortSignal.timeout(5000) });
-    const d = await r.json();
-    document.getElementById('statusDot').style.background = 'var(--green)';
-    document.getElementById('statusText').textContent = 'Servidor online';
+    await fetch(API+'/status',{signal:AbortSignal.timeout(5000)});
+    document.getElementById('sysDot').style.background='var(--green)';
+    document.getElementById('sysText').textContent='Sistema operacional';
   } catch {
-    document.getElementById('statusDot').style.background = 'var(--red)';
-    document.getElementById('statusText').textContent = 'Servidor offline';
+    document.getElementById('sysDot').style.background='var(--red)';
+    document.getElementById('sysText').textContent='Servidor offline';
   }
 }
-checkStatus();
-setInterval(checkStatus, 30000);
+checkStatus(); setInterval(checkStatus,30000);
 
-// ========== TAB SWITCHING ==========
-function switchTab(tab) {
-  ['diario','estrategia','demo'].forEach(t => {
-    document.getElementById('tab-' + t).style.display = 'none';
-    const btn = document.getElementById('tab-btn-' + t);
-    btn.className = 'tab';
-  });
-  document.getElementById('tab-' + tab).style.display = 'flex';
-  const activeClass = tab === 'diario' ? 'active-daily' : tab === 'estrategia' ? 'active-pro' : 'active-demo';
-  document.getElementById('tab-btn-' + tab).className = 'tab ' + activeClass;
+// TAB SWITCH
+function switchTab(t) {
+  document.querySelectorAll('.tab-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+t).classList.add('active');
+  document.getElementById('btn-'+t).classList.add('active');
 }
 
-// ========== TAB 1: DIÁRIO ==========
-const agentConfig = {
-  nova: {
-    name: 'Nova',
-    avatar: '🟣',
-    avatarBg: 'rgba(168,85,247,0.15)',
-    desc: 'Especialista em marketing para stands automóvel',
-    welcome: 'Olá! Sou a <strong>Nova</strong>, especialista em marketing para stands automóvel. Posso criar posts para Instagram, Facebook, conteúdo para campanhas, anúncios e muito mais. Como posso ajudar?',
-    endpoint: '/marketing'
-  },
-  atendimento: {
-    name: 'Atendimento',
-    avatar: '🤖',
-    avatarBg: 'rgba(34,197,94,0.15)',
-    desc: 'Teste do bot WhatsApp antes de ir para produção',
-    welcome: 'Olá! Sou o agente de <strong>Atendimento</strong> da K2 FIRST. Aqui podes testar como vou responder aos clientes no WhatsApp. Simula uma conversa de cliente e avalia as minhas respostas.',
-    endpoint: '/chat'
-  }
+// AGENT SELECT
+const agents = {
+  nova:{name:'Nova',av:'N',avBg:'#7C3AED',desc:'Especialista em marketing para stands automóvel',welcome:'Olá! Sou a <strong>Nova</strong>, especialista em marketing para stands automóvel. Posso criar posts para Instagram, Facebook, campanhas e muito mais. Como posso ajudar?',endpoint:'/marketing'},
+  atendimento:{name:'Atendimento',av:'A',avBg:'#059669',desc:'Teste do bot WhatsApp antes de produção',welcome:'Olá! Sou o agente de <strong>Atendimento</strong> K2 FIRST. Testa aqui como vou responder aos clientes no WhatsApp.',endpoint:'/chat'}
 };
-
-function selectDailyAgent(agent) {
-  currentDailyAgent = agent;
-  document.querySelectorAll('.agent-item').forEach(el => el.classList.remove('active'));
-  document.getElementById('agent-' + agent).classList.add('active');
-  const cfg = agentConfig[agent];
-  document.getElementById('chatAvatar').textContent = cfg.avatar;
-  document.getElementById('chatAvatar').style.background = cfg.avatarBg;
-  document.getElementById('chatName').textContent = cfg.name;
-  document.getElementById('chatDesc').textContent = cfg.desc;
-  clearChat(cfg.welcome, cfg.avatar);
+function selectAgent(a) {
+  curAgent=a;
+  document.querySelectorAll('.agent-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('ag-'+a).classList.add('active');
+  const cfg=agents[a];
+  document.getElementById('chatAv').style.background=cfg.avBg;
+  document.getElementById('chatAv').innerHTML='<span>'+cfg.av+'</span>';
+  document.getElementById('chatName').textContent=cfg.name;
+  document.querySelector('.chat-input').placeholder='Mensagem para '+cfg.name+'...';
+  clearChat(cfg.welcome,cfg.av,cfg.avBg);
 }
-
-function clearChat(welcomeMsg, avatar) {
-  const cfg = agentConfig[currentDailyAgent];
-  const msg = welcomeMsg || cfg.welcome;
-  const av = avatar || cfg.avatar;
-  document.getElementById('messages').innerHTML = `
-    <div class="message bot">
-      <div class="msg-avatar">${av}</div>
-      <div class="msg-bubble">${msg}</div>
-    </div>`;
+function clearChat(msg,av,bg) {
+  const cfg=agents[curAgent];
+  const m=msg||cfg.welcome, a=av||cfg.av, b=bg||cfg.avBg;
+  document.getElementById('messages').innerHTML=`<div class="msg bot"><div class="msg-av bot" style="background:${b}"><span>${a}</span></div><div class="bubble">${m}</div></div>`;
+  msgCount=0;
 }
-
-function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-}
-
-async function sendMessage() {
-  const input = document.getElementById('chatInput');
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-
-  const cfg = agentConfig[currentDailyAgent];
-  const msgs = document.getElementById('messages');
-
-  // User bubble
-  msgs.innerHTML += `<div class="message user"><div class="msg-avatar">👤</div><div class="msg-bubble">${escHtml(text)}</div></div>`;
-
-  // Typing indicator
-  const typingId = 'typing-' + Date.now();
-  msgs.innerHTML += `<div class="message bot thinking" id="${typingId}"><div class="msg-avatar">${cfg.avatar}</div><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div></div>`;
-  msgs.scrollTop = msgs.scrollHeight;
-
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+async function sendMsg() {
+  const inp=document.getElementById('chatInput');
+  const txt=inp.value.trim(); if(!txt)return; inp.value='';
+  const cfg=agents[curAgent]; const msgs=document.getElementById('messages');
+  msgs.innerHTML+=`<div class="msg user"><div class="msg-av user">MR</div><div class="bubble">${esc(txt)}</div></div>`;
+  const tid='t'+Date.now();
+  msgs.innerHTML+=`<div class="msg bot" id="${tid}"><div class="msg-av bot" style="background:${cfg.avBg}"><span>${cfg.av}</span></div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div></div>`;
+  msgs.scrollTop=msgs.scrollHeight; msgCount++;
+  document.getElementById('statConversas').textContent=msgCount;
   try {
-    const res = await fetch(API + cfg.endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: 'dashboard_' + Date.now(), message: text, standName: 'K2 FIRST' })
-    });
-    const data = await res.json();
-    document.getElementById(typingId).remove();
-    msgs.innerHTML += `<div class="message bot"><div class="msg-avatar">${cfg.avatar}</div><div class="msg-bubble">${escHtml(data.reply || 'Sem resposta.')}</div></div>`;
-  } catch (err) {
-    document.getElementById(typingId).remove();
-    msgs.innerHTML += `<div class="message bot"><div class="msg-avatar">${cfg.avatar}</div><div class="msg-bubble" style="color:var(--red)">⚠️ Erro de ligação ao servidor. Verifica se o PM2 está a correr.</div></div>`;
+    const r=await fetch(API+cfg.endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:'dash_'+Date.now(),message:txt,standName:'K2 FIRST'})});
+    const d=await r.json();
+    document.getElementById(tid).remove();
+    msgs.innerHTML+=`<div class="msg bot"><div class="msg-av bot" style="background:${cfg.avBg}"><span>${cfg.av}</span></div><div class="bubble">${esc(d.reply||'Sem resposta.')}</div></div>`;
+  } catch(e) {
+    document.getElementById(tid).remove();
+    msgs.innerHTML+=`<div class="msg bot"><div class="msg-av bot" style="background:var(--red)"><span>!</span></div><div class="bubble" style="color:var(--red)">⚠️ Erro de ligação.</div></div>`;
   }
-  msgs.scrollTop = msgs.scrollHeight;
+  msgs.scrollTop=msgs.scrollHeight;
 }
 
-// ========== TAB 2: ESTRATÉGIA ==========
+// PRO AGENTS
 const proAgents = {
-  'nicho-explorer': {
-    title: '🌐 Explorar Nicho',
-    desc: 'Valida se um nicho de mercado é GO ou NÃO-GO com análise completa de oportunidade',
-    fields: [
-      { id: 'nicho', label: 'Nicho / Mercado', placeholder: 'ex: Stands automóvel usados em Portugal', type: 'input' },
-      { id: 'descricao', label: 'Descrição do negócio (opcional)', placeholder: 'ex: Quero automatizar o atendimento de stands...', type: 'textarea' }
-    ],
-    prompt: (f) => `Analisa o seguinte nicho de mercado e dá-me uma avaliação GO/NÃO-GO completa:
-
-Nicho: ${f.nicho}
-${f.descricao ? 'Contexto: ' + f.descricao : ''}
-
-Inclui na análise:
-- Decisão GO/NÃO-GO com score (1-10)
-- Tamanho estimado do mercado em Portugal
-- Top 3 dores principais dos clientes neste nicho
-- 3 ICPs (perfis de cliente ideal) com detalhe
-- Principais concorrentes/soluções existentes
-- Oportunidade específica de IA neste nicho
-- Próximos passos recomendados`
-  },
-  'mapear-nicho': {
-    title: '🗺️ Mapear Nicho',
-    desc: 'Gera 9 documentos do nicho: ICP, dores em €, mecanismo, oferta base, linguagem do cliente',
-    fields: [
-      { id: 'nicho', label: 'Nicho / Sector', placeholder: 'ex: Stands automóvel usados Portugal', type: 'input' },
-      { id: 'icp', label: 'Cliente Ideal (ICP)', placeholder: 'ex: Stand com 1-5 vendedores, 50-200 carros/ano, zona urbana', type: 'textarea' }
-    ],
-    prompt: (f) => `Faz um mapeamento completo do seguinte nicho de mercado:
-
-Nicho: ${f.nicho}
-ICP: ${f.icp}
-
-Entrega os seguintes documentos:
-1. Perfil do Cliente Alvo (3 ICPs detalhados com demografia, comportamento, budget)
-2. Mapa de Dores (5 dores quantificadas em € de prejuízo/mês)
-3. Mecanismo Proprietário (proposta única de valor com nome)
-4. Oferta Base (o que vender, como, a que preço)
-5. Linguagem do Cliente (palavras que usa, objeções comuns)
-6. Eventos Gatilho (quando compra, o que o faz decidir)
-7. Objeções e Respostas (top 5 objeções + quebra de cada)
-8. Plano Go-to-Market simplificado
-9. Próximos passos com timeline`
-  },
-  'cliente-radar': {
-    title: '📡 Radar de Cliente',
-    desc: 'Pesquisa profunda de um prospect: empresa, decisor, concorrentes, gaps e ganchos',
-    fields: [
-      { id: 'company', label: 'Nome da Empresa', placeholder: 'ex: Stand Silva Automóveis', type: 'input' },
-      { id: 'sector', label: 'Sector de Actividade', placeholder: 'ex: Comércio automóvel usado', type: 'input' },
-      { id: 'url', label: 'Website (opcional)', placeholder: 'ex: www.standsilvaauto.pt', type: 'input' },
-      { id: 'decisor', label: 'Nome do Decisor (opcional)', placeholder: 'ex: João Silva', type: 'input' }
-    ],
-    prompt: (f) => `Faz uma pesquisa completa sobre este prospect para preparar uma reunião de vendas:
-
-Empresa: ${f.company}
-Sector: ${f.sector}
-${f.url ? 'Website: ' + f.url : ''}
-${f.decisor ? 'Decisor: ' + f.decisor : ''}
-
-Pesquisa e entrega:
-1. Perfil da Empresa (dimensão, anos mercado, presença digital, facturação estimada)
-2. Perfil do Decisor (cargo, background, estilo de comunicação)
-3. Top 3 Concorrentes Directos com comparação
-4. Gaps Identificados (o que não estão a fazer bem)
-5. Top 3 Ganchos de Abertura (frases para iniciar a conversa)
-6. 5 Perguntas SPIN para a reunião
-7. Objeções prováveis + como responder
-8. ROI projetado com esta solução`
-  },
-  'lp-builder': {
-    title: '🖥️ Landing Page Builder',
-    desc: 'Gera copy completo + estrutura HTML para landing page de alta conversão',
-    fields: [
-      { id: 'produto', label: 'Produto / Serviço', placeholder: 'ex: Sistema de agentes IA para stands automóvel', type: 'input' },
-      { id: 'nicho', label: 'Nicho / Público Alvo', placeholder: 'ex: Donos de stands automóvel em Portugal', type: 'input' },
-      { id: 'preco', label: 'Preço / Oferta', placeholder: 'ex: 297€/mês, sem instalação', type: 'input' },
-      { id: 'diferencial', label: 'Diferencial Principal', placeholder: 'ex: Único sistema que responde em 30 segundos no WhatsApp', type: 'textarea' }
-    ],
-    prompt: (f) => `Cria o copy completo para uma landing page de alta conversão:
-
-Produto: ${f.produto}
-Público: ${f.nicho}
-Preço: ${f.preco}
-Diferencial: ${f.diferencial}
-
-Entrega os 9 blocos canônicos:
-1. Hero (headline, subheadline, CTA principal)
-2. Problema (agitar a dor em linguagem do cliente)
-3. Solução (apresentar o produto como a resposta)
-4. Como Funciona (3 passos simples)
-5. Prova Social (3 testimoniais simulados realistas)
-6. Benefícios (5 bullets de valor)
-7. Oferta (o que está incluído, bónus, garantia)
-8. FAQ (5 perguntas frequentes)
-9. CTA Final (urgência + próximo passo claro)`
-  },
-  'pitch-deck': {
-    title: '📊 Pitch Deck Builder',
-    desc: 'Gera conteúdo para apresentação comercial de 20 slides parametrizada por cliente',
-    fields: [
-      { id: 'company', label: 'Empresa do Cliente', placeholder: 'ex: Stand Silva Automóveis', type: 'input' },
-      { id: 'nicho', label: 'Nicho / Sector', placeholder: 'ex: Comércio automóvel usado', type: 'input' },
-      { id: 'dor', label: 'Principal Dor Identificada', placeholder: 'ex: Perde 60% dos leads por demora na resposta', type: 'input' },
-      { id: 'solucao', label: 'Solução a Apresentar', placeholder: 'ex: Agente IA atendimento 24/7 WhatsApp + qualificação automática', type: 'textarea' }
-    ],
-    prompt: (f) => `Cria o conteúdo completo para uma apresentação comercial de 20 slides para este cliente específico:
-
-Cliente: ${f.company}
-Sector: ${f.nicho}
-Dor Principal: ${f.dor}
-Solução: ${f.solucao}
-
-Estrutura dos 20 slides:
-1. Capa (nome cliente + proposta)
-2-3. O Problema (dados do sector, dor específica)
-4-5. O Custo do Problema (em € por mês)
-6-7. A Solução (visão geral)
-8-10. Como Funciona (3 componentes)
-11-12. Demo / Casos de Uso (exemplos reais)
-13. Resultados Esperados (métricas)
-14-15. Casos de Sucesso (2 clientes similares simulados)
-16. Investimento (preço + ROI)
-17. O que está incluído (entregáveis)
-18. Próximos Passos (timeline de 30 dias)
-19. Garantia + FAQ
-20. CTA Final (proposta de acção)`
-  },
-  'meeting-prep': {
-    title: '📋 Prep de Reunião',
-    desc: 'Briefing de 1 página com gancho, 5 perguntas SPIN, objeções e próximo passo',
-    fields: [
-      { id: 'company', label: 'Empresa / Prospect', placeholder: 'ex: Stand Silva Automóveis', type: 'input' },
-      { id: 'objetivo', label: 'Objetivo da Reunião', placeholder: 'ex: Apresentar sistema de agentes IA, fechar piloto', type: 'input' },
-      { id: 'decisor', label: 'Decisor / Participantes', placeholder: 'ex: João Silva (dono), Maria (comercial)', type: 'input' },
-      { id: 'contexto', label: 'Contexto (o que já sabes)', placeholder: 'ex: Stand com 3 vendedores, usa WhatsApp manual, perde leads ao fim de semana', type: 'textarea' }
-    ],
-    prompt: (f) => `Cria um briefing de 1 página para esta reunião de vendas:
-
-Empresa: ${f.company}
-Objetivo: ${f.objetivo}
-Decisores: ${f.decisor}
-Contexto: ${f.contexto}
-
-O briefing deve ter exactamente:
-1. Quem é o Cliente (3 linhas máximo)
-2. O que ele provavelmente sente (top 3 dores)
-3. Gancho de Abertura (1 frase poderosa para começar)
-4. 5 Perguntas SPIN ajustadas ao contexto
-5. Top 3 Objeções Prováveis + Como Quebrar cada uma
-6. ROI Projetado para este cliente específico
-7. Próximo Passo Concreto a Propor no final da reunião
-8. Lacunas / O que perguntar para saber mais
-
-Máximo 1-2 páginas. Directo ao ponto. Sem fluff.`
-  },
-  'gtm': {
-    title: '📈 GTM Architect',
-    desc: 'Estratégia go-to-market: 4 toques outbound + calendário editorial do mês 1',
-    fields: [
-      { id: 'nicho', label: 'Nicho / Mercado Alvo', placeholder: 'ex: Stands automóvel usados Portugal', type: 'input' },
-      { id: 'oferta', label: 'Oferta Principal', placeholder: 'ex: Agente IA atendimento WhatsApp 297€/mês', type: 'input' },
-      { id: 'canal', label: 'Canal Principal de Vendas', placeholder: 'ex: Visitas presenciais + LinkedIn + WhatsApp', type: 'input' },
-      { id: 'budget', label: 'Budget Marketing (opcional)', placeholder: 'ex: 0€ (orgânico) ou 200€/mês', type: 'input' }
-    ],
-    prompt: (f) => `Cria uma estratégia Go-to-Market completa para o mês 1:
-
-Nicho: ${f.nicho}
-Oferta: ${f.oferta}
-Canal Principal: ${f.canal}
-Budget: ${f.budget || 'Orgânico (sem budget)'}
-
-Entrega:
-1. Sequência de 4 Toques Outbound (mensagem LinkedIn, WhatsApp, email, follow-up) com template pronto para cada
-2. Calendário Editorial Mês 1 (semana a semana):
-   - 3 posts LinkedIn por semana
-   - 2 emails de prospecção por semana
-   - 1 artigo/conteúdo por semana
-3. Script de Prospecção por Telefone (2 minutos)
-4. Critérios de Qualificação (BANT simplificado)
-5. Meta Realista Mês 1 (número de reuniões e conversões esperadas)
-6. KPIs para acompanhar semanalmente`
-  },
-  'playbook': {
-    title: '📖 Playbook de Vendas',
-    desc: 'Script de diagnóstico 30min + 5 objeções com resposta + funil de 5 estágios',
-    fields: [
-      { id: 'nicho', label: 'Nicho / Sector', placeholder: 'ex: Stands automóvel usados Portugal', type: 'input' },
-      { id: 'produto', label: 'Produto / Serviço', placeholder: 'ex: Sistema agentes IA atendimento 24/7', type: 'input' },
-      { id: 'preco', label: 'Preço', placeholder: 'ex: 297€/mês', type: 'input' },
-      { id: 'objecoes', label: 'Objeções que já ouves', placeholder: 'ex: "É muito caro", "Não tenho tempo para isso", "Já temos WhatsApp"', type: 'textarea' }
-    ],
-    prompt: (f) => `Cria um playbook de vendas completo para este produto/nicho:
-
-Nicho: ${f.nicho}
-Produto: ${f.produto}
-Preço: ${f.preco}
-Objeções conhecidas: ${f.objecoes}
-
-Entrega:
-1. Script de Diagnóstico 30 Minutos (fase a fase com tempo):
-   - Abertura e rapport (5 min)
-   - Situação atual (8 min)
-   - Problemas e impacto (8 min)
-   - Apresentação da solução (7 min)
-   - Próximo passo (2 min)
-2. Top 5 Objeções + Quebra de cada (com frase exata a dizer)
-3. Funil de 5 Estágios com critérios de passagem entre etapas
-4. Sinais de Compra (o que o cliente diz/faz quando está pronto)
-5. Email de Follow-up pós reunião (template pronto)
-6. Proposta Comercial estrutura (o que incluir em 1 página)`
-  }
+  'nicho-explorer':{title:'🌐 Explorar Nicho',desc:'Valida se um nicho é GO ou NÃO-GO com análise completa',fields:[{id:'nicho',label:'Nicho / Mercado',ph:'ex: Stands automóvel usados em Portugal',type:'input'},{id:'desc',label:'Descrição (opcional)',ph:'ex: Quero automatizar o atendimento...',type:'ta'}],prompt:f=>`Analisa o seguinte nicho de mercado e dá-me uma avaliação GO/NÃO-GO completa:\n\nNicho: ${f.nicho}\n${f.desc?'Contexto: '+f.desc:''}\n\nInclui: score (1-10), tamanho de mercado em Portugal, top 3 dores, 3 ICPs, concorrentes, oportunidade IA, próximos passos.`},
+  'mapear-nicho':{title:'🗺️ Mapear Nicho',desc:'9 documentos: ICP, dores em €, mecanismo, oferta, linguagem',fields:[{id:'nicho',label:'Nicho / Sector',ph:'ex: Stands automóvel usados Portugal',type:'input'},{id:'icp',label:'Cliente Ideal',ph:'ex: Stand 1-5 vendedores, zona urbana',type:'ta'}],prompt:f=>`Faz mapeamento completo do nicho:\n\nNicho: ${f.nicho}\nICP: ${f.icp}\n\nEntrega: 1.Perfil Cliente 2.Mapa Dores (€) 3.Mecanismo 4.Oferta Base 5.Linguagem Cliente 6.Eventos Gatilho 7.Objeções 8.GTM 9.Timeline`},
+  'cliente-radar':{title:'📡 Radar de Cliente',desc:'Pesquisa profunda: empresa, decisor, gaps, ganchos',fields:[{id:'company',label:'Empresa',ph:'ex: Stand Silva Automóveis',type:'input'},{id:'sector',label:'Sector',ph:'ex: Comércio automóvel usado',type:'input'},{id:'url',label:'Website (opcional)',ph:'ex: standsilvaauto.pt',type:'input'},{id:'decisor',label:'Decisor (opcional)',ph:'ex: João Silva',type:'input'}],prompt:f=>`Pesquisa completa sobre este prospect:\n\nEmpresa: ${f.company}\nSector: ${f.sector}\n${f.url?'Website: '+f.url:''}\n${f.decisor?'Decisor: '+f.decisor:''}\n\nEntrega: Perfil empresa, Perfil decisor, Top 3 concorrentes, Gaps identificados, 3 ganchos de abertura, 5 perguntas SPIN, objeções+respostas, ROI projetado`},
+  'lp-builder':{title:'🖥️ Landing Page',desc:'Copy completo + estrutura HTML de alta conversão',fields:[{id:'produto',label:'Produto/Serviço',ph:'ex: Sistema agentes IA para stands',type:'input'},{id:'nicho',label:'Público Alvo',ph:'ex: Donos de stands em Portugal',type:'input'},{id:'preco',label:'Preço',ph:'ex: 297€/mês',type:'input'},{id:'dif',label:'Diferencial',ph:'ex: Responde em 30seg no WhatsApp',type:'ta'}],prompt:f=>`Copy completo para landing page:\n\nProduto: ${f.produto}\nPúblico: ${f.nicho}\nPreço: ${f.preco}\nDiferencial: ${f.dif}\n\n9 blocos: Hero, Problema, Solução, Como Funciona, Prova Social, Benefícios, Oferta, FAQ, CTA Final`},
+  'pitch-deck':{title:'📊 Pitch Deck',desc:'20 slides comerciais personalizados por cliente',fields:[{id:'company',label:'Empresa do Cliente',ph:'ex: Stand Silva Automóveis',type:'input'},{id:'nicho',label:'Sector',ph:'ex: Comércio automóvel usado',type:'input'},{id:'dor',label:'Principal Dor',ph:'ex: Perde 60% leads por resposta lenta',type:'input'},{id:'sol',label:'Solução',ph:'ex: Agente IA 24/7 WhatsApp',type:'ta'}],prompt:f=>`Apresentação comercial 20 slides para:\n\nCliente: ${f.company}\nSector: ${f.nicho}\nDor: ${f.dor}\nSolução: ${f.sol}\n\n20 slides: Capa, Problema(2-3), Custo(4-5), Solução(6-7), Como Funciona(8-10), Demo(11-12), Resultados(13), Casos(14-15), Investimento(16), Entregáveis(17), Timeline(18), Garantia(19), CTA(20)`},
+  'meeting-prep':{title:'📋 Prep de Reunião',desc:'Briefing 1 página: gancho, SPIN, objeções, próximo passo',fields:[{id:'company',label:'Empresa/Prospect',ph:'ex: Stand Silva Automóveis',type:'input'},{id:'obj',label:'Objetivo',ph:'ex: Apresentar agentes IA, fechar piloto',type:'input'},{id:'dec',label:'Decisores',ph:'ex: João Silva (dono)',type:'input'},{id:'ctx',label:'Contexto',ph:'ex: 3 vendedores, WhatsApp manual',type:'ta'}],prompt:f=>`Briefing 1 página para reunião:\n\nEmpresa: ${f.company}\nObjetivo: ${f.obj}\nDecisores: ${f.dec}\nContexto: ${f.ctx}\n\nEntrega: Quem é o cliente, Top 3 dores, Gancho de abertura, 5 perguntas SPIN, Top 3 objeções+quebra, ROI projetado, Próximo passo, Lacunas`},
+  'gtm':{title:'📈 GTM Architect',desc:'Estratégia go-to-market + calendário editorial mês 1',fields:[{id:'nicho',label:'Nicho Alvo',ph:'ex: Stands automóvel Portugal',type:'input'},{id:'oferta',label:'Oferta',ph:'ex: Agente IA WhatsApp 297€/mês',type:'input'},{id:'canal',label:'Canal Principal',ph:'ex: Visitas + LinkedIn + WhatsApp',type:'input'},{id:'budget',label:'Budget (opcional)',ph:'ex: 0€ orgânico ou 200€/mês',type:'input'}],prompt:f=>`Estratégia Go-to-Market mês 1:\n\nNicho: ${f.nicho}\nOferta: ${f.oferta}\nCanal: ${f.canal}\nBudget: ${f.budget||'Orgânico'}\n\nEntrega: 4 toques outbound (templates prontos), Calendário editorial semana a semana, Script prospecção telefone, Critérios qualificação, Meta mês 1, KPIs semanais`},
+  'playbook':{title:'📖 Playbook de Vendas',desc:'Script 30min + 5 objeções + funil 5 estágios',fields:[{id:'nicho',label:'Nicho',ph:'ex: Stands automóvel Portugal',type:'input'},{id:'produto',label:'Produto',ph:'ex: Sistema agentes IA 24/7',type:'input'},{id:'preco',label:'Preço',ph:'ex: 297€/mês',type:'input'},{id:'obj',label:'Objeções que ouves',ph:'ex: "É caro", "Não tenho tempo"',type:'ta'}],prompt:f=>`Playbook de vendas completo:\n\nNicho: ${f.nicho}\nProduto: ${f.produto}\nPreço: ${f.preco}\nObjeções: ${f.obj}\n\nEntrega: Script diagnóstico 30min fase a fase, Top 5 objeções+quebra, Funil 5 estágios, Sinais de compra, Email follow-up template, Proposta 1 página`}
 };
-
-function selectProAgent(agentKey) {
-  currentProAgent = agentKey;
-  document.querySelectorAll('.pro-agent-item').forEach(el => el.classList.remove('active'));
-  document.getElementById('pro-' + agentKey).classList.add('active');
-  const cfg = proAgents[agentKey];
-  document.getElementById('proTitle').textContent = cfg.title;
-  document.getElementById('proDesc').textContent = cfg.desc;
+function selPro(k) {
+  curPro=k;
+  document.querySelectorAll('.pro-agent-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('pro-'+k).classList.add('active');
+  const cfg=proAgents[k];
+  document.getElementById('proTitle').textContent=cfg.title;
+  document.getElementById('proDesc').textContent=cfg.desc;
   renderProForm(cfg);
-  document.getElementById('proOutput').innerHTML = '<div class="output-placeholder"><div class="icon">🧠</div><p>Preenche o formulário e clica em <strong>Gerar</strong> para o agente trabalhar</p></div>';
-  document.getElementById('proOutputActions').style.display = 'none';
-  lastOutputText = '';
+  document.getElementById('proOutput').innerHTML='<div class="output-empty"><div class="ico">🧠</div><p>Preenche o formulário e clica em <strong>Gerar</strong></p></div>';
+  document.getElementById('proActions').style.display='none';
+  lastPro='';
 }
-
 function renderProForm(cfg) {
-  const panel = document.getElementById('proFormPanel');
-  let html = '';
-  cfg.fields.forEach(f => {
-    if (f.type === 'textarea') {
-      html += `<div class="form-group"><label>${f.label}</label><textarea id="pf-${f.id}" placeholder="${f.placeholder}" rows="3"></textarea></div>`;
-    } else {
-      html += `<div class="form-group"><label>${f.label}</label><input type="text" id="pf-${f.id}" placeholder="${f.placeholder}"></div>`;
-    }
+  let h='';
+  cfg.fields.forEach(f=>{
+    h+=`<div class="form-group"><label>${f.label}</label>`;
+    if(f.type==='ta') h+=`<textarea id="pf-${f.id}" placeholder="${f.ph}" rows="3"></textarea>`;
+    else h+=`<input type="text" id="pf-${f.id}" placeholder="${f.ph}">`;
+    h+=`</div>`;
   });
-  html += `<button class="generate-btn" id="generateBtn" onclick="generatePro()">⚡ Gerar com IA</button>`;
-  panel.innerHTML = html;
+  h+=`<button class="gen-btn" id="genBtn" onclick="generatePro()">⚡ Gerar com IA</button>`;
+  document.getElementById('proForm').innerHTML=h;
 }
-
 async function generatePro() {
-  const cfg = proAgents[currentProAgent];
-  const fields = {};
-  let valid = true;
-  cfg.fields.forEach(f => {
-    const el = document.getElementById('pf-' + f.id);
-    if (el) fields[f.id] = el.value.trim();
-  });
-
-  const firstRequired = cfg.fields[0];
-  if (!fields[firstRequired.id]) {
-    alert('Por favor preenche pelo menos o campo "' + firstRequired.label + '"');
-    return;
-  }
-
-  const btn = document.getElementById('generateBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> A gerar...';
-
-  const prompt = cfg.prompt(fields);
-  const output = document.getElementById('proOutput');
-  output.innerHTML = '<div style="display:flex;align-items:center;gap:12px;color:var(--muted);padding:20px 0;"><div class="spinner spinner-light"></div> O agente está a trabalhar... pode demorar 30-60 segundos.</div>';
-
+  const cfg=proAgents[curPro];
+  const f={};
+  cfg.fields.forEach(x=>{const el=document.getElementById('pf-'+x.id);if(el)f[x.id]=el.value.trim();});
+  if(!f[cfg.fields[0].id]){alert('Preenche "'+cfg.fields[0].label+'"');return;}
+  const btn=document.getElementById('genBtn');
+  btn.disabled=true;btn.innerHTML='<div class="spin"></div> A gerar...';
+  const out=document.getElementById('proOutput');
+  out.innerHTML='<div style="display:flex;align-items:center;gap:12px;color:var(--muted2);padding:20px 0;"><div class="spin spin-w"></div> O agente está a trabalhar... 30–60 segundos.</div>';
   try {
-    const res = await fetch(API + '/gos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: 'pro_' + Date.now(), message: prompt, agent: currentProAgent })
-    });
-    const data = await res.json();
-    const text = data.reply || data.response || 'Sem resposta do servidor.';
-    lastOutputText = text;
-    output.innerHTML = '<div class="output-content">' + markdownToHtml(text) + '</div>';
-    document.getElementById('proOutputActions').style.display = 'flex';
-  } catch (err) {
-    output.innerHTML = '<div style="color:var(--red);padding:20px 0;">⚠️ Erro: ' + err.message + '<br><br>Verifica se o endpoint /gos está configurado no server.js</div>';
-  }
-
-  btn.disabled = false;
-  btn.innerHTML = '⚡ Gerar com IA';
+    const r=await fetch(API+'/gos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:'pro_'+Date.now(),message:cfg.prompt(f),agent:curPro})});
+    const d=await r.json();
+    lastPro=d.reply||d.response||'Sem resposta.';
+    out.innerHTML='<div class="output-content">'+md(lastPro)+'</div>';
+    document.getElementById('proActions').style.display='flex';
+  } catch(e){out.innerHTML='<div style="color:var(--red);padding:20px 0;">⚠️ Erro: '+e.message+'</div>';}
+  btn.disabled=false;btn.innerHTML='⚡ Gerar com IA';
 }
+function copyPro(){if(lastPro)navigator.clipboard.writeText(lastPro).then(()=>alert('Copiado!'));}
+function clearPro(){document.getElementById('proOutput').innerHTML='<div class="output-empty"><div class="ico">🧠</div><p>Preenche o formulário e clica em <strong>Gerar</strong></p></div>';document.getElementById('proActions').style.display='none';lastPro='';}
 
-function copyOutput() {
-  if (lastOutputText) navigator.clipboard.writeText(lastOutputText).then(() => alert('Copiado!'));
-}
-function clearOutput() {
-  document.getElementById('proOutput').innerHTML = '<div class="output-placeholder"><div class="icon">🧠</div><p>Preenche o formulário e clica em <strong>Gerar</strong> para o agente trabalhar</p></div>';
-  document.getElementById('proOutputActions').style.display = 'none';
-  lastOutputText = '';
-}
-
-// ========== TAB 3: DEMO ==========
-async function runDemo(agentKey) {
-  const cfg = proAgents[agentKey] || proAgents['cliente-radar'];
-  let fields = {};
-
-  if (agentKey === 'cliente-radar') {
-    fields = { company: document.getElementById('d-company').value, sector: document.getElementById('d-sector').value, url: document.getElementById('d-url').value };
-    if (!fields.company) { alert('Preenche o nome da empresa'); return; }
-  } else if (agentKey === 'meeting-prep') {
-    fields = { company: document.getElementById('m-company').value, objetivo: document.getElementById('m-objetivo').value, decisor: document.getElementById('m-decisor').value, contexto: '' };
-    if (!fields.company) { alert('Preenche o nome da empresa'); return; }
-  } else if (agentKey === 'playbook') {
-    fields = { nicho: document.getElementById('p-nicho').value, produto: document.getElementById('p-produto').value, preco: document.getElementById('p-preco').value, objecoes: '' };
-    if (!fields.nicho) { alert('Preenche o nicho'); return; }
-  } else if (agentKey === 'pitch-deck') {
-    fields = { company: document.getElementById('pd-company').value, nicho: '', dor: document.getElementById('pd-dor').value, solucao: document.getElementById('pd-solucao').value };
-    if (!fields.company) { alert('Preenche o nome da empresa'); return; }
-  }
-
-  const titles = { 'cliente-radar': '📡 Radar — ' + (fields.company || ''), 'meeting-prep': '📋 Prep — ' + (fields.company || ''), 'playbook': '📖 Playbook — ' + (fields.nicho || ''), 'pitch-deck': '📊 Pitch — ' + (fields.company || '') };
-  document.getElementById('demoOverlayTitle').textContent = titles[agentKey] || 'Resultado';
-
-  const overlay = document.getElementById('demoOverlay');
-  const body = document.getElementById('demoOverlayBody');
-  overlay.classList.add('show');
-  body.innerHTML = '<div style="display:flex;align-items:center;gap:12px;color:var(--muted);padding:20px 0;"><div class="spinner spinner-light"></div> O agente está a trabalhar...</div>';
-
-  const proCfg = proAgents[agentKey];
-  const prompt = proCfg.prompt(fields);
-
+// DEMO
+const demoPrompts = {
+  'cliente-radar':f=>`Pesquisa completa sobre este prospect:\n\nEmpresa: ${f.co}\nSector: ${f.sec}\n${f.url?'Website: '+f.url:''}\n\nEntrega: Perfil empresa, decisor, concorrentes, gaps, 3 ganchos de abertura, 5 perguntas SPIN, objeções, ROI projetado`,
+  'meeting-prep':f=>`Briefing 1 página:\n\nEmpresa: ${f.co}\nObjetivo: ${f.obj}\nDecisores: ${f.dec}\n\nEntrega: Quem é, Top 3 dores, Gancho abertura, 5 SPIN, Objeções+quebra, ROI, Próximo passo`,
+  'playbook':f=>`Playbook de vendas:\n\nNicho: ${f.ni}\nProduto: ${f.pr}\nPreço: ${f.pc}\n\nEntrega: Script 30min, Top 5 objeções+quebra, Funil 5 estágios, Sinais compra, Follow-up email`,
+  'pitch-deck':f=>`Apresentação 20 slides para:\n\nEmpresa: ${f.co}\nDor: ${f.dor}\nSolução: ${f.sol}\n\n20 slides: Capa, Problema, Custo, Solução, Como Funciona, Demo, Resultados, Casos, Investimento, Entregáveis, Timeline, Garantia, CTA`
+};
+async function runDemo(k) {
+  let f={},title='';
+  if(k==='cliente-radar'){f={co:document.getElementById('d-co').value,sec:document.getElementById('d-sec').value,url:document.getElementById('d-url').value};if(!f.co){alert('Preenche o nome da empresa');return;}title='📡 Radar — '+f.co;}
+  if(k==='meeting-prep'){f={co:document.getElementById('m-co').value,obj:document.getElementById('m-obj').value,dec:document.getElementById('m-dec').value};if(!f.co){alert('Preenche a empresa');return;}title='📋 Prep — '+f.co;}
+  if(k==='playbook'){f={ni:document.getElementById('p-ni').value,pr:document.getElementById('p-pr').value,pc:document.getElementById('p-pc').value};if(!f.ni){alert('Preenche o nicho');return;}title='📖 Playbook — '+f.ni;}
+  if(k==='pitch-deck'){f={co:document.getElementById('pd-co').value,dor:document.getElementById('pd-dor').value,sol:document.getElementById('pd-sol').value};if(!f.co){alert('Preenche a empresa');return;}title='📊 Pitch — '+f.co;}
+  document.getElementById('overlayTitle').textContent=title;
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('overlayBody').innerHTML='<div style="display:flex;align-items:center;gap:12px;color:var(--muted2);padding:20px 0;"><div class="spin spin-w"></div> O agente está a trabalhar...</div>';
   try {
-    const res = await fetch(API + '/gos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: 'demo_' + Date.now(), message: prompt, agent: agentKey })
-    });
-    const data = await res.json();
-    const text = data.reply || data.response || 'Sem resposta.';
-    lastDemoText = text;
-    body.innerHTML = '<div class="output-content" style="--pro:var(--demo);">' + markdownToHtml(text) + '</div>';
-  } catch (err) {
-    body.innerHTML = '<div style="color:var(--red);">⚠️ Erro: ' + err.message + '</div>';
-  }
+    const r=await fetch(API+'/gos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:'demo_'+Date.now(),message:demoPrompts[k](f),agent:k})});
+    const d=await r.json();
+    lastOverlay=d.reply||d.response||'Sem resposta.';
+    document.getElementById('overlayBody').innerHTML='<div class="output-content">'+md(lastOverlay)+'</div>';
+  } catch(e){document.getElementById('overlayBody').innerHTML='<div style="color:var(--red);">⚠️ Erro: '+e.message+'</div>';}
 }
+function closeOverlay(){document.getElementById('overlay').classList.remove('show');}
+function copyOverlay(){if(lastOverlay)navigator.clipboard.writeText(lastOverlay).then(()=>alert('Copiado!'));}
 
-function closeDemoOverlay() {
-  document.getElementById('demoOverlay').classList.remove('show');
-}
-function copyDemoOutput() {
-  if (lastDemoText) navigator.clipboard.writeText(lastDemoText).then(() => alert('Copiado!'));
-}
+// UTILS
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+function md(s){return s.replace(/^### (.+)$/gm,'<h3>$1</h3>').replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/^# (.+)$/gm,'<h1>$1</h1>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/`(.+?)`/g,'<code>$1</code>').replace(/^---$/gm,'<hr>').replace(/^\* (.+)$/gm,'<li>$1</li>').replace(/^\d+\. (.+)$/gm,'<li>$1</li>').replace(/(<li>.*<\/li>\n?)+/g,'<ul>$&</ul>').replace(/\n\n/g,'</p><p>').replace(/^(?!<[hupbl])(.+)$/gm,'<p>$1</p>').replace(/<p><\/p>/g,'');}
 
-// ========== UTILS ==========
-function escHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-}
-
-function markdownToHtml(md) {
-  return md
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/`(.+?)`/g, '<code>$1</code>')
-    .replace(/^---$/gm, '<hr>')
-    .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
-    .replace(/^\* (.+)$/gm, '<li>$1</li>')
-    .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/^(?!<[hupbl])(.+)$/gm, '<p>$1</p>')
-    .replace(/<p><\/p>/g, '');
-}
-
-// Init pro form
-selectProAgent('nicho-explorer');
+// INIT
+clearChat();
+renderProForm(proAgents['nicho-explorer']);
 </script>
 </body>
 </html>
